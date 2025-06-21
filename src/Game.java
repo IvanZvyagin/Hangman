@@ -30,7 +30,17 @@ public class Game {
     private static String maskSecretWord;
 
     public static void main(String[] args) throws FileNotFoundException {
-       startGame();
+        String[] gameData = readAndOutWord(words);
+        String original = gameData[0];
+        String currentMask = gameData[1];
+
+        while (currentMask.contains("*")) {
+            currentMask = makePlayerTurn(currentMask);
+            System.out.println("Текущее состояние: " + currentMask);
+        }
+
+        System.out.println("Поздравляем! Вы угадали слово: " + original);
+
 
     }
 
@@ -55,7 +65,7 @@ public class Game {
             throw new RuntimeException(e);
         }
         //Получение слова и маскируем под звездочки
-        secretWord = getRandomIndexWord(words);
+        secretWord = getRandomIndexWord(words).toLowerCase();
          maskSecretWord = secretWord.replaceAll(".", "*");
 
         //вывод слова на экран
@@ -75,6 +85,10 @@ public class Game {
         String input = scanner.nextLine().trim().toLowerCase();
         if(input.isEmpty()){
             System.out.println("Поле ввода не может быть пустым!");
+            return currentMask;
+        }
+        if(input.length() > 1){
+            System.out.println("Введите только одну букву");
             return currentMask;
         }
         char letter = input.charAt(0);
@@ -100,7 +114,7 @@ public class Game {
     }
 
     public static void checkGameStatus() {
-        //проверить максимально количество ошибок
+        //проверить максимально количество ошибок (всего 6 ошибок)
         //остались ошибки или нет
         //если ошибок осталось 0 то проиграл
         //если ошибки еще есть игра продолжается
