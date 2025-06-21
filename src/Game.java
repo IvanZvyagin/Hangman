@@ -24,11 +24,14 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Game {
+    private static List<String> words = new ArrayList<>();
     private static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) throws FileNotFoundException {
         startGame();
-        readAndOutWord();
+        readAndOutWord(words);
+        makePlayerTurn();
+
     }
 
 
@@ -40,8 +43,7 @@ public class Game {
 
     }
 
-    public static void readAndOutWord() throws FileNotFoundException {
-        List<String> words = new ArrayList<>();
+    public static String readAndOutWord(List<String>words) throws FileNotFoundException {
         try (BufferedReader bf = new BufferedReader(new FileReader("src/words.txt"))) {
             String word;
             while ((word = bf.readLine()) != null) {
@@ -51,24 +53,34 @@ public class Game {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        String secretWord = getRandomWord(words);
+        //Получение слова и маскируем под звездочки
+        String secretWord = getRandomIndexWord(words);
         String maskSecretWord = secretWord.replaceAll(".", "*");
-        System.out.println(maskSecretWord);
 
         //вывод слова на экран
+        System.out.println(maskSecretWord);
+        return maskSecretWord;
     }
 
-    public static String getRandomWord(List<String> words) {
+    public static String getRandomIndexWord(List<String> words) {
         Random random = new Random();
         int randomIndex = random.nextInt(words.size());
         return words.get(randomIndex);
     }
 
-    public static void makePlayerTurn() {
-        char letter = scanner.nextLine().charAt(0);
+
+    public static String makePlayerTurn(String secretWord) throws FileNotFoundException {
+        System.out.println("Введите букву: ");
+        String letter = scanner.nextLine();
+        if(secretWord.contains(letter)){
+            String replace = secretWord.replace("*", letter);
+            System.out.println(replace);
+        }
+
+
         //ввод с консоли буквы
-        //проверка правильного введения
         //проверка буквы в слове
+        //проверка введенной буквы рус алфавита
         //проверка окончания игры
     }
 
