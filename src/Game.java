@@ -26,11 +26,11 @@ import java.util.Scanner;
 public class Game {
     private static List<String> words = new ArrayList<>();
     private static Scanner scanner = new Scanner(System.in);
+    private static String secretWord;
+    private static String maskSecretWord;
 
     public static void main(String[] args) throws FileNotFoundException {
-        startGame();
-        readAndOutWord(words);
-        makePlayerTurn();
+       startGame();
 
     }
 
@@ -41,9 +41,10 @@ public class Game {
         //gameNotOver
         //playerTurn
 
+
     }
 
-    public static String readAndOutWord(List<String>words) throws FileNotFoundException {
+    public static String[] readAndOutWord(List<String>words) throws FileNotFoundException {
         try (BufferedReader bf = new BufferedReader(new FileReader("src/words.txt"))) {
             String word;
             while ((word = bf.readLine()) != null) {
@@ -54,12 +55,12 @@ public class Game {
             throw new RuntimeException(e);
         }
         //Получение слова и маскируем под звездочки
-        String secretWord = getRandomIndexWord(words);
-        String maskSecretWord = secretWord.replaceAll(".", "*");
+        secretWord = getRandomIndexWord(words);
+         maskSecretWord = secretWord.replaceAll(".", "*");
 
         //вывод слова на экран
-        System.out.println(maskSecretWord);
-        return maskSecretWord;
+        System.out.println("Загаданное слово: " + maskSecretWord);
+        return new String[]{secretWord,maskSecretWord};
     }
 
     public static String getRandomIndexWord(List<String> words) {
@@ -69,15 +70,29 @@ public class Game {
     }
 
 
-    public static String makePlayerTurn(String secretWord) throws FileNotFoundException {
+    public static String makePlayerTurn(String currentMask) throws FileNotFoundException {
         System.out.println("Введите букву: ");
-        String letter = scanner.nextLine();
-        if(secretWord.contains(letter)){
-            String replace = secretWord.replace("*", letter);
-            System.out.println(replace);
+        String input = scanner.nextLine().trim().toLowerCase();
+        if(input.isEmpty()){
+            System.out.println("Поле ввода не может быть пустым!");
+            return currentMask;
         }
+        char letter = input.charAt(0);
 
-
+        if(!Character.UnicodeBlock.of(letter).equals(Character.UnicodeBlock.CYRILLIC)){
+            System.out.println("Введите букву русского алфавита!");
+            return currentMask;
+        }
+        if(!secretWord.contains(String.valueOf(letter))){
+            System.out.println("Буквы " + letter + " нет в слове!");
+        }
+        char[] maskChars = currentMask.toCharArray();
+        for (int i = 0; i < secretWord.length(); i++) {
+            if(secretWord.charAt(i) == letter){
+                maskChars[i] = letter;
+            }
+        }
+        return new String(maskChars);
         //ввод с консоли буквы
         //проверка буквы в слове
         //проверка введенной буквы рус алфавита
