@@ -21,10 +21,12 @@ import java.io.IOException;
 import java.util.*;
 
 public class Game {
-    private static List<String> words = new ArrayList<>();
-    private static Scanner scanner = new Scanner(System.in);
+    private static final List<String> words = new ArrayList<>();
+    private static final Scanner scanner = new Scanner(System.in);
     private static String secretWord;
     private static String maskSecretWord;
+    private static final int MAX_ERRORS = 6;
+    private static int errors = 0;
 
     public static void main(String[] args) throws FileNotFoundException {
         System.out.println("Добро пожаловать в игру \"Виселица\" \nВведите: ");
@@ -116,10 +118,11 @@ public class Game {
         //проверка окончания игры
     }
 
-    public static String[] checkGameStatus() {
+    public static boolean isGameOver(String maskSecretWord, int errors) throws FileNotFoundException {
+
         //проверить максимально количество ошибок (всего 6 ошибок)
         //ошибки будет хранить в новом массиве(возвращаем в конце метода)
-        return new String[]{};
+        return false;
         //остались ошибки или нет
         //если ошибок осталось 0 то проиграл
         //если ошибки еще есть игра продолжается
