@@ -37,21 +37,27 @@ public class Game {
     }
 
 
+    public static void gameLoop(String currentMask, Set<Character> usedLetters) throws FileNotFoundException {
+        while (currentMask.contains("*")) {
+            currentMask = makePlayerTurn(currentMask,usedLetters);
+            System.out.println("Текущее состояние: " + currentMask);
+            if (isGameOver(currentMask, secretWord, errors)) {
+                return;
+            }
+        }
+    }
     public static void startGame() throws FileNotFoundException {
         System.out.println("[N]ew game чтобы начать или [E]xit чтобы выйти");
         String start = scanner.nextLine();
         //добавить зацикливание, если введена неверная буква
         if (start.toLowerCase().contains("n".toLowerCase())) {
+            Set<Character> usedLetters = new HashSet<>();
             String[] gameData = readAndOutWord(words);
             String original = gameData[0];
             String currentMask = gameData[1];
-            while (currentMask.contains("*")) {
-                currentMask = makePlayerTurn(currentMask);
-                System.out.println("Текущее состояние: " + currentMask);
-                if (isGameOver(currentMask,secretWord,errors)){
-                    return;
-                }
-            }
+            errors = 0;
+            gameLoop(currentMask,usedLetters);
+
         } else if (start.toLowerCase().contains("e".toLowerCase())) {
             System.out.println("Вы не захотели играть");
         }
@@ -84,7 +90,7 @@ public class Game {
     }
 
 
-    public static String makePlayerTurn(String currentMask) throws FileNotFoundException {
+    public static String makePlayerTurn(String currentMask, Set<Character> usedLetters) throws FileNotFoundException {
         System.out.println("Введите букву: ");
         //ввод с консоли буквы
         String input = scanner.nextLine().trim().toLowerCase();
@@ -105,10 +111,16 @@ public class Game {
         }
         if (!secretWord.contains(String.valueOf(letter))) {
             System.out.println("Буквы " + letter + " нет в слове!");
-            errors++;
-            System.out.println("Количество ошибок " + errors + "/6");
-
+            checkErrors(secretWord,letter);
         }
+
+        if(usedLetters.contains(letter)){
+            System.out.println("Буква " + letter + " уже использовалась");
+        }
+        usedLetters.add(letter);
+        System.out.println("Использованные буквы " + usedLetters);
+
+
         char[] maskChars = currentMask.toCharArray();
         for (int i = 0; i < secretWord.length(); i++) {
             if (secretWord.charAt(i) == letter) {
@@ -126,26 +138,18 @@ public class Game {
                 return true;
             } else if(!currentMask.contains("*")){
                 System.out.println("Поздравляем! Вы угадали слово: " + secretWord);
-                //проверить максимально количество ошибок (всего 6 ошибок)
-                //ошибки будет хранить в новом массиве(возвращаем в конце метода)
-                //остались ошибки или нет
-                //если ошибок осталось 0 то проиграл
-                //если ошибки еще есть игра продолжается
-                //проиграл или выиграл
         }
         return false;
     }
 
 
-    public static void inputLetters() {
-
-        System.out.println("Уже введены: ");
-
+    public static void checkErrors(String secretWord, char letter) {
+        if(!secretWord.contains(String.valueOf(letter))){
+            errors++;
+            System.out.println("Количество ошибок " + errors + "/6");
+        }else if(letter == letter){
+        }
     }
-
-    public static void isValidationInput() {
-        //переделать этот метод(наверное) сделать список для хранения и выведения введенных букв
-        //проверка что введена именно буква
-        //проверка что введена одна буква
+    public static void drawHangman(){
     }
 }
