@@ -147,9 +147,12 @@ public class Game {
         if(!secretWord.contains(String.valueOf(letter))){
             errors++;
             System.out.println("Количество ошибок " + errors + "/6");
+            drawHangman(errors);
         }else if(letter == letter){
         }
     }
-    public static void drawHangman(){
+    public static void drawHangman(int errors){
+
+        }
     }
-}
+
