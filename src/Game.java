@@ -45,18 +45,16 @@ public class Game {
             String[] gameData = readAndOutWord(words);
             String original = gameData[0];
             String currentMask = gameData[1];
-
             while (currentMask.contains("*")) {
                 currentMask = makePlayerTurn(currentMask);
                 System.out.println("Текущее состояние: " + currentMask);
+                if (isGameOver(currentMask,secretWord,errors)){
+                    return;
+                }
             }
-            System.out.println("Поздравляем! Вы угадали слово: " + original);
-
         } else if (start.toLowerCase().contains("e".toLowerCase())) {
             System.out.println("Вы не захотели играть");
         }
-        //gameNotOver
-        //playerTurn
     }
 
     public static String[] readAndOutWord(List<String> words) throws FileNotFoundException {
@@ -107,6 +105,9 @@ public class Game {
         }
         if (!secretWord.contains(String.valueOf(letter))) {
             System.out.println("Буквы " + letter + " нет в слове!");
+            errors++;
+            System.out.println("Количество ошибок " + errors + "/6");
+
         }
         char[] maskChars = currentMask.toCharArray();
         for (int i = 0; i < secretWord.length(); i++) {
@@ -118,16 +119,23 @@ public class Game {
         //проверка окончания игры
     }
 
-    public static boolean isGameOver(String maskSecretWord, int errors) throws FileNotFoundException {
+    public static boolean isGameOver(String currentMask, String secretWord, int errors) throws FileNotFoundException {
 
-        //проверить максимально количество ошибок (всего 6 ошибок)
-        //ошибки будет хранить в новом массиве(возвращаем в конце метода)
+            if (errors >= MAX_ERRORS) {
+                System.out.println("Игра окончена, вы были повешены! Загаданное слово " + secretWord);
+                return true;
+            } else if(!currentMask.contains("*")){
+                System.out.println("Поздравляем! Вы угадали слово: " + secretWord);
+                //проверить максимально количество ошибок (всего 6 ошибок)
+                //ошибки будет хранить в новом массиве(возвращаем в конце метода)
+                //остались ошибки или нет
+                //если ошибок осталось 0 то проиграл
+                //если ошибки еще есть игра продолжается
+                //проиграл или выиграл
+        }
         return false;
-        //остались ошибки или нет
-        //если ошибок осталось 0 то проиграл
-        //если ошибки еще есть игра продолжается
-        //проиграл или выиграл
     }
+
 
     public static void inputLetters() {
 
