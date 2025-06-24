@@ -39,13 +39,14 @@ public class Game {
 
     public static void gameLoop(String currentMask, Set<Character> usedLetters) throws FileNotFoundException {
         while (currentMask.contains("*")) {
-            currentMask = makePlayerTurn(currentMask,usedLetters);
+            currentMask = makePlayerTurn(currentMask, usedLetters);
             System.out.println("Текущее состояние: " + currentMask);
             if (isGameOver(currentMask, secretWord, errors)) {
                 return;
             }
         }
     }
+
     public static void startGame() throws FileNotFoundException {
         System.out.println("[N]ew game чтобы начать или [E]xit чтобы выйти");
         String start = scanner.nextLine();
@@ -56,7 +57,7 @@ public class Game {
             String original = gameData[0];
             String currentMask = gameData[1];
             errors = 0;
-            gameLoop(currentMask,usedLetters);
+            gameLoop(currentMask, usedLetters);
 
         } else if (start.toLowerCase().contains("e".toLowerCase())) {
             System.out.println("Вы не захотели играть");
@@ -89,11 +90,16 @@ public class Game {
         return words.get(randomIndex);
     }
 
+//    public static String checkInput(){
+//
+//    }
+
 
     public static String makePlayerTurn(String currentMask, Set<Character> usedLetters) throws FileNotFoundException {
         System.out.println("Введите букву: ");
         //ввод с консоли буквы
         String input = scanner.nextLine().trim().toLowerCase();
+
         //проверка буквы в слове
         if (input.isEmpty()) {
             System.out.println("Поле ввода не может быть пустым!");
@@ -109,18 +115,7 @@ public class Game {
             System.out.println("Введите букву русского алфавита!");
             return currentMask;
         }
-        if (!secretWord.contains(String.valueOf(letter))) {
-            System.out.println("Буквы " + letter + " нет в слове!");
-            checkErrors(secretWord,letter);
-        }
-
-        if(usedLetters.contains(letter)){
-            System.out.println("Буква " + letter + " уже использовалась");
-        }
-        usedLetters.add(letter);
-        System.out.println("Использованные буквы " + usedLetters);
-
-
+        checkErrors(secretWord, letter, usedLetters);
         char[] maskChars = currentMask.toCharArray();
         for (int i = 0; i < secretWord.length(); i++) {
             if (secretWord.charAt(i) == letter) {
@@ -128,31 +123,90 @@ public class Game {
             }
         }
         return new String(maskChars);
-        //проверка окончания игры
     }
 
     public static boolean isGameOver(String currentMask, String secretWord, int errors) throws FileNotFoundException {
 
-            if (errors >= MAX_ERRORS) {
-                System.out.println("Игра окончена, вы были повешены! Загаданное слово " + secretWord);
-                return true;
-            } else if(!currentMask.contains("*")){
-                System.out.println("Поздравляем! Вы угадали слово: " + secretWord);
+        if (errors >= MAX_ERRORS) {
+            System.out.println("Игра окончена, вы были повешены! Загаданное слово " + secretWord);
+            return true;
+        } else if (!currentMask.contains("*")) {
+            System.out.println("Поздравляем! Вы угадали слово: " + secretWord);
         }
         return false;
     }
 
 
-    public static void checkErrors(String secretWord, char letter) {
-        if(!secretWord.contains(String.valueOf(letter))){
+    public static void checkErrors(String secretWord, char letter, Set<Character> usedLetters) {
+        if (usedLetters.contains(letter)) {
+            System.out.println("Буква " + letter + " уже использовалась");
+        } else if (!secretWord.contains(String.valueOf(letter))) {
+            drawGallows(errors);
+            System.out.println("Буквы " + letter + " нет в слове!");
+            drawGallows(errors);
             errors++;
             System.out.println("Количество ошибок " + errors + "/6");
-            drawHangman(errors);
-        }else if(letter == letter){
+            usedLetters.add(letter);
+            System.out.println("Использованные буквы " + usedLetters);
         }
     }
-    public static void drawHangman(int errors){
 
-        }
+    public static void drawGallows(int errors) {
+        String[] gallows = {
+                //1 errors
+                " +---+\n" +
+                        " |   |\n" +
+                        "     |\n" +
+                        "     |\n" +
+                        "     |\n" +
+                        "     |\n" +
+                        " =====",
+                //2 errors
+                " +---+\n" +
+                        " |   |\n" +
+                        " O   |\n" +
+                        "     |\n" +
+                        "     |\n" +
+                        "     |\n" +
+                        " =====",
+                //3 errors
+                " +---+\n" +
+                        " |   |\n" +
+                        " O   |\n" +
+                        " |   |\n" +
+                        "     |\n" +
+                        "     |\n" +
+                        " =====",
+                //4 errors
+                " +---+\n" +
+                        " |   |\n" +
+                        " O   |\n" +
+                        "/|   |\n" +
+                        "     |\n" +
+                        "     |\n" +
+                        " =====",
+                //5 errors
+                " +---+\n" +
+                        " |   |\n" +
+                        " O   |\n" +
+                        "/|\\  |\n" +
+                        "     |\n" +
+                        "     |\n" +
+                        " =====",
+                //6 errors
+                " +---+\n" +
+                        " |   |\n" +
+                        " O   |\n" +
+                        "/|\\  |\n" +
+                        "/ \\  |\n" +
+                        "     |\n" +
+                        " ====="
+
+
+        };
+        int index = Math.min(errors, gallows.length - 1);
+        System.out.println(gallows[index]);
+
     }
+}
 
