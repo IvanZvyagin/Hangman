@@ -30,9 +30,10 @@ public class Game {
 
     public static void main(String[] args) throws FileNotFoundException {
         System.out.println("Добро пожаловать в игру \"Виселица\" \nВведите: ");
-        while (true) {
+        do {
             startGame();
-        }
+        } while (true);
+
 
     }
 
@@ -49,22 +50,22 @@ public class Game {
 
     public static void startGame() throws FileNotFoundException {
         System.out.println("[N]ew game чтобы начать или [E]xit чтобы выйти");
-        String start = scanner.nextLine();
+        String start = scanner.nextLine().trim();
+        if(start.equals("N") || start.equals("n")){
+        Set<Character> usedLetters = new HashSet<>();
+        String[] gameData = readAndOutWord(words);
+        secretWord = gameData[0];
+        String currentMask = gameData[1];
+        errors = 0;
+        gameLoop(currentMask, usedLetters);
         //добавить зацикливание, если введена неверная буква
-        if (start.toLowerCase().contains("n".toLowerCase())) {
-            Set<Character> usedLetters = new HashSet<>();
-            String[] gameData = readAndOutWord(words);
-            String original = gameData[0];
-            String currentMask = gameData[1];
-            errors = 0;
-            gameLoop(currentMask, usedLetters);
-
-        } else if (start.toLowerCase().contains("e".toLowerCase())) {
-            System.out.println("Вы не захотели играть");
+        } else if (start.equals("E") || start.equals("e")) {
+            System.out.println("Вы не захотели играть, до встречи!");
+            System.exit(0);
         }
     }
 
-    public static String[] readAndOutWord(List<String> words) throws FileNotFoundException {
+    public static String[] readAndOutWord(List<String> words)  {
         try (BufferedReader bf = new BufferedReader(new FileReader("src/words.txt"))) {
             String word;
             while ((word = bf.readLine()) != null) {
@@ -90,15 +91,11 @@ public class Game {
         return words.get(randomIndex);
     }
 
-//    public static String checkInput(){
-//
-//    }
-
-
     public static String makePlayerTurn(String currentMask, Set<Character> usedLetters) throws FileNotFoundException {
         System.out.println("Введите букву: ");
         //ввод с консоли буквы
         String input = scanner.nextLine().trim().toLowerCase();
+
 
         //проверка буквы в слове
         if (input.isEmpty()) {
@@ -116,6 +113,8 @@ public class Game {
             return currentMask;
         }
         checkErrors(secretWord, letter, usedLetters);
+        usedLetters.add(letter);
+        System.out.println("Использованные буквы " + usedLetters);
         char[] maskChars = currentMask.toCharArray();
         for (int i = 0; i < secretWord.length(); i++) {
             if (secretWord.charAt(i) == letter) {
@@ -128,7 +127,7 @@ public class Game {
     public static boolean isGameOver(String currentMask, String secretWord, int errors) throws FileNotFoundException {
 
         if (errors >= MAX_ERRORS) {
-            System.out.println("Игра окончена, вы были повешены! Загаданное слово " + secretWord);
+            System.out.println("Игра окончена, вы были повешены! Загаданное слово: " + secretWord);
             return true;
         } else if (!currentMask.contains("*")) {
             System.out.println("Поздравляем! Вы угадали слово: " + secretWord);
@@ -141,13 +140,11 @@ public class Game {
         if (usedLetters.contains(letter)) {
             System.out.println("Буква " + letter + " уже использовалась");
         } else if (!secretWord.contains(String.valueOf(letter))) {
-            drawGallows(errors);
             System.out.println("Буквы " + letter + " нет в слове!");
             drawGallows(errors);
             errors++;
-            System.out.println("Количество ошибок " + errors + "/6");
-            usedLetters.add(letter);
-            System.out.println("Использованные буквы " + usedLetters);
+            System.out.println("Количество ошибок " + errors + "/" + MAX_ERRORS);
+
         }
     }
 
